@@ -1,0 +1,3 @@
+name = Winnie the Pooh
+age = 7
+weight = 20.5

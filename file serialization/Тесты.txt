@@ -1,0 +1,29 @@
+Исходники:
+Person модуль для Main (к Main1 не получилось привязать)
+Main печатает экземпляр p1 типа Person, потом считывает его
+Main1 считывает строки из файла и по ним создает экземпляр Person и выводит его
+
+Тесты для Main, их нужно по одному вставлять в output.txt
+1)
+Person {name = "Vasiliy", age = 34, weight = 54.3}
+2)
+Person {name = "Dumbledore", age = 115, weight = 80.2}
+3)
+Person {name = "Angel", age = 2000, weight = 0.25}
+
+Тесты для Main1, их нужно по одному вставлять в файл input1.txt, выход output1.txt
+1)
+age = 350
+weight = 66.6
+name = Dracula
+2)
+weight = 75.41
+name = Elizabeth Grant
+age = 32
+3)
+name = Sophie
+weight = 45
+age = 18
+
+при импорте в Main1, если ипользовать name person, выдает Variable not in scope: name :: Person -> String
+аналогично, если emptyp тоже написать в модуле, а не в самом исполняемом файле 

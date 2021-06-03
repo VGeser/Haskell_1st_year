@@ -1,0 +1,2 @@
+Person {name = "Dumbledore", age = 115, weight = 80.2}
+ success
