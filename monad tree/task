@@ -1,0 +1,112 @@
+Пусть бинарные деревья заданы типом данных
+
+\begin{code}
+data ATree a = ALeaf a | ABranch (ATree a) a (ATree a)
+deriving (Show, Read)
+\end{code}
+
+1. Пусть задано такое дерево в типе ATree Double, содержащее в вершинах числа Double:
+
+\begin{code}
+dTree :: ATree Double
+-- dTree = ABranch (ABranch (ALeaf 21) 2.2 (ABranch (ABranch (ALeaf 62) 0 (ALeaf 66)) 22 (ALeaf 46))) 1.1 (ABranch (ALeaf 34) 3.3 (ALeaf 35))
+dTree = ABranch (ABranch (ALeaf 21) 2.2 (ABranch (ABranch (ALeaf 62) 43 (ALeaf 66)) 22 (ALeaf 46))) 1.1 (ABranch (ALeaf 34) 3.3 (ALeaf 35))
+\end{code}
+
+Необходимо разделить некоторое число (Double) на все числа в вершинах.
+Вернуть (Just ..), если это возможно, Nothing -- если невозможно.
+Но сначала мы c помощью вспомогательной ф-ции должны найти произведение всех вершин.
+Если какая-то вершина содержит 0, то на этом шаге (и далее) должно выйти Nothing.
+Потом, разделить данное число на произведение, если это возможно.
+Таким образом, нужно задать в итоге ф-ции c такой сигнатурой
+(основная и вспомогательная):
+
+\begin{code}
+divWithTreeM :: Double -> ATree Double -> Maybe Double
+dM :: ATree Double -> Maybe Double
+\end{code}
+
+2. Пусть теперь дерево помимо значений, содержит ID для каждой вершины
+(ID -- положительное целое число, уникальное для каждой вершины, порядок пока не важен):
+
+\begin{code}
+idTree :: ATree (Int,Double)
+idTree =
+ABranch
+(
+ABranch
+(ALeaf (4,21))
+(2,2.2)
+(
+ABranch
+(
+ABranch
+(ALeaf (100,62))
+(7,0)
+(ALeaf (200,66))
+)
+(5,22)
+(ALeaf (203,46))
+)
+
+)
+(1,1.1)
+(
+ABranch
+(ALeaf (301,34))
+(3,3.3)
+(ALeaf (307,0))
+)
+\end{code}
+
+В условиях предыдущей задачи построить функцию, которая возвращает (Right ..), если это возможно.
+Если какая-то вершина содержит 0, то вернуть что-то типа (Left "smth. wrong with ID 307").
+Если вершин с нулями несколько, то вернуть сообщение с ID вершины первого встреченного нуля.
+Таким образом, нужно задать ф-цию c такой сигнатурой:
+
+\begin{code}
+divWithTreeE :: Double -> ATree (Int,Double) -> Either String Double
+\end{code}
+
+3. С деревом idTree из задачи-2 найти сумму вершин (Double), но при этом вести журналирование: ID какой вершины в текущий момент обрабатывается.
+
+Таким образом, нужно задать ф-цию c такой сигнатурой:
+
+\begin{code}
+sumWithTreeE :: ATree (Int,Double) -> Writer String Double
+\end{code}
+
+С помощью утилит runWriter, snd, putStr вывести построчно лог.
+
+4. Для дерева dTree из задачи-1 построить дерево типа ATree (Int,Double), перенумеровав вершины и добавив последовательно номера (ID) к значениям,
+т.е. построить функцию с такой сигнатурой:
+
+\begin{code}
+numTree :: ATree Double -> ATree (Int,Double)
+\end{code}
+
+4.1 Для тренировки сначала сделать «в ручном режиме» без монадной техники.
+4.2 Потом сделать задание с использованием монады State, т.е. сначала задать вспомогательную функцию типа
+
+\begin{code}
+enumS :: ATree Double -> State Int (ATree (Int,Double))
+\end{code}
+
+а затем с помощью утилиты evalState можно задать уже необходимую нам numTree.
+
+
+
+№4.2
+вот вариант решения у Мерзлякова:
+
+enumS :: ATree Double -> State Int (ATree (Int,Double))
+enumS (ALeaf a)= do
+    current <- get
+    put $ current+1
+    return $ ALeaf (current, a)
+enumS (ABranch l a r) = do
+    current <- get
+    put $ current+1
+    left <- enumS l
+    right <- enumS r
+    return $ ABranch left (current, a) right
